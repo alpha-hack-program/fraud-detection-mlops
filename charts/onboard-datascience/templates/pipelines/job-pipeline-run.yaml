@@ -1,0 +1,107 @@
+
+{{- if .Values.pipeline.enabled }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: job-pipeline-run
+  namespace: {{ $.Values.project.name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{ $.Values.project.name }}
+  name: job-pipeline-run-role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list"]
+- apiGroups: ["tekton.dev"]
+  resources: ["pipelineruns"]
+  verbs: ["create", "wait", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: job-pipeline-run-binding
+  namespace: {{ $.Values.project.name }}
+subjects:
+- kind: ServiceAccount
+  name: job-pipeline-run
+  namespace: {{ $.Values.project.name }}
+roleRef:
+  kind: Role
+  name: job-pipeline-run-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: job-pipelinerun-upload-{{ .Values.pipeline.name }}
+  namespace: {{ $.Values.project.name }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  template:
+    spec:
+      serviceAccountName: job-pipeline-run
+      containers:
+      - name: pipelinerun
+        image: registry.redhat.io/openshift4/ose-tools-rhel8:v4.14
+        imagePullPolicy: IfNotPresent        
+        command: ["/bin/bash"]
+        args:
+        - -ec
+        - |-
+          NAMESPACE="{{ $.Values.project.name }}"
+          LABEL="initial-pipeline-run=true"
+          # Check if there is a pod with the specified label in the specified namespace
+          if ! oc get pods -n "$NAMESPACE" -l "$LABEL" -l pipeline-upload={{ .Values.pipeline.name }} --no-headers | grep -q '^'; then
+              sleep 30
+              cat <<EOF | oc create -f -
+              apiVersion: tekton.dev/v1
+              kind: PipelineRun
+              metadata:
+                  generateName: pipeline-upload-{{ .Values.pipeline.name }}
+                  namespace: {{ $.Values.project.name }}
+                  labels:
+                    initial-pipeline-run: "true"
+                    pipeline-upload: "{{ .Values.pipeline.name }}"
+              spec:
+                  pipelineRef:
+                    name: pipeline-upload-{{ .Values.pipeline.name }}
+                  workspaces:
+                  - name: workspace-source
+                    persistentVolumeClaim:
+                      claimName: pipeline-upload-{{ .Values.pipeline.name }}-source-pvc
+          EOF
+          fi    
+              
+          if ! oc get pods -n "$NAMESPACE" -l "$LABEL" -l pipeline-run={{ .Values.pipeline.name }} --no-headers | grep -q '^'; then            
+              oc wait --for=condition=Succeeded --timeout=1h pipelinerun -l "$LABEL" -l pipeline-upload={{ .Values.pipeline.name }} -n "$NAMESPACE"
+              sleep 10
+              
+              cat <<EOF | oc create -f -
+              apiVersion: tekton.dev/v1
+              kind: PipelineRun
+              metadata:
+                  generateName: pipeline-run-{{ .Values.pipeline.name }}
+                  namespace: {{ $.Values.project.name }}
+                  labels:
+                    initial-pipeline-run: "true"
+                    pipeline-run: "{{ .Values.pipeline.name }}"
+              spec:
+                  pipelineRef:
+                    name: pipeline-run-{{ .Values.pipeline.name }}
+                  params:
+                  - name: CARDTRANSDATA
+                    value: "https://raw.githubusercontent.com/davidseve/mlops/main/ai-examples/fraud-detection/data/card_transdata_sort.csv"
+          EOF
+              
+              
+          fi
+          oc wait --for=condition=Succeeded --timeout=1h pipelinerun -l "$LABEL" -l pipeline-run={{ .Values.pipeline.name }} -n "$NAMESPACE"
+      restartPolicy: Never
+  backoffLimit: 1
+{{- end }}
+
