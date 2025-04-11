@@ -27,11 +27,11 @@ spec:
     - description: Card transaction data
       name: CARDTRANSDATA
       type: string
-      default: https://raw.githubusercontent.com/davidseve/mlops/main/ai-examples/fraud-detection/data/card_transdata.csv
+      default: https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata.csv
     - description: Train model component
       name: TRAIN_MODEL_COMPONENT
       type: string
-      default: https://raw.githubusercontent.com/davidseve/mlops/main/ai-examples/fraud-detection/pipeline/train-model/component.yaml
+      default: https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/pipeline/train-model/component.yaml
   steps:
     - image: $(params.TASK_IMAGE)
       name: compile

@@ -95,7 +95,7 @@ spec:
                     name: pipeline-run-{{ .Values.pipeline.name }}
                   params:
                   - name: CARDTRANSDATA
-                    value: "https://raw.githubusercontent.com/davidseve/mlops/main/ai-examples/fraud-detection/data/card_transdata_sort.csv"
+                    value: "https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata_sort.csv"
           EOF
               
               
