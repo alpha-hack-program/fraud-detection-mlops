@@ -1,0 +1,17 @@
+{{- if .Values.project.autocreate }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.project.name }}
+  labels:
+    kubernetes.io/metadata.name: {{ .Values.project.name }}
+    opendatahub.io/dashboard: 'true'
+    argocd.argoproj.io/managed-by: openshift-gitops
+  annotations:
+    openshift.io/description: 'Auto-generated DataScienceProject for User: {{ .Values.user }}'
+    openshift.io/display-name: {{ .Values.project.name }}
+    openshift.io/requester: {{ .Values.user }}
+spec:
+  finalizers:
+    - kubernetes
+{{- end }}

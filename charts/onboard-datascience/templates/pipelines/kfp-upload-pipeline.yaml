@@ -1,0 +1,74 @@
+{{- if .Values.pipeline.enabled }}
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: pipeline-upload-{{ .Values.pipeline.name }}
+  namespace: {{ $.Values.project.name }}
+spec:
+  params:
+    - name: GIT_REPO
+      type: string
+      default: "{{ .Values.pipeline.repo }}"
+    - name: GIT_REVISION
+      type: string
+      default: "{{ .Values.pipeline.revision }}"
+    - name: GIT_SSL_VERIFY
+      type: string
+      default: '{{ .Values.pipeline.gitSslVerify }}'
+  tasks:
+    - name: fetch-repository
+      timeout: 10m0s
+      params:
+        - name: URL
+          value: $(params.GIT_REPO)
+        - name: REVISION
+          value: $(params.GIT_REVISION)
+        - name: DELETE_EXISTING
+          value: 'true'
+        - name: SSL_VERIFY
+          value: $(params.GIT_SSL_VERIFY)
+      taskRef:
+        params:
+          - name: name
+            value: git-clone
+          - name: namespace
+            value: openshift-pipelines
+        resolver: cluster
+      workspaces:
+        - name: output
+          workspace: workspace-source
+    - name: kfp-upload
+      runAfter:
+        - fetch-repository
+      params:
+        - name: TASK_IMAGE
+          value: tensorflow/tensorflow
+        - name: PYTHON_PIPELINE_NAME
+          value: {{ .Values.pipeline.pythonPipelineName }}
+        - name: REQUIREMENTS_FILE
+          value: requirements.txt
+        - name: PIPELINES_PATH
+          value: {{ .Values.pipeline.pipelinePath }}
+      taskRef:
+        kind: Task
+        name: kfp-upload
+      workspaces:
+        - name: source
+          workspace: workspace-source
+  workspaces:
+    - name: workspace-source
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pipeline-upload-{{ .Values.pipeline.name }}-source-pvc
+  namespace: {{ $.Values.project.name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pipeline.sourceWorkspaceSize }}
+{{- end }}
+
+

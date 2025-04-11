@@ -1,0 +1,4 @@
+inference:
+  dataconnections: dataconnection-model
+  version: 1
+multimodel: false

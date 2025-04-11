@@ -1,0 +1,39 @@
+---
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+    openshift.io/display-name: {{ $.Values.project.name }}inference
+    serving.knative.openshift.io/enablePassthrough: 'true'
+    sidecar.istio.io/inject: 'true'
+    sidecar.istio.io/rewriteAppHTTPProbers: 'true'
+    {{ if $.Values.multimodel }}
+    serving.kserve.io/deploymentMode: ModelMesh
+    {{ end }}
+    #serving.kserve.io/storage-initializer-uid: "1000970001" # https://github.com/kserve/kserve/blob/master/docs/OPENSHIFT_GUIDE.md#with-service-mesh-istio
+  name: {{ $.Values.project.name }}inference
+  namespace: {{ $.Values.project.name }}
+  labels:
+    opendatahub.io/dashboard: 'true'
+spec:
+  predictor:
+    maxReplicas: 1
+    minReplicas: 1
+    model:
+      modelFormat:
+        name: onnx
+        version: '1'
+      resources:
+        limits:
+          cpu: '2'
+          memory: 8Gi
+        requests:
+          cpu: '1'
+          memory: 4Gi
+      runtime: {{ $.Values.project.name }}inference-runtime
+      storage:
+        key:  {{ .Values.inference.dataconnections }}
+        path: /models/{{ $.Values.project.name }}/{{ $.Values.inference.version }}/
+        
+        #Know issues https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/2-latest/html-single/release_notes/index#known-issues_relnotes
