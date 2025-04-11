@@ -25,8 +25,6 @@
 </table>
 
 
-TODO change raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main
-caminbar el job para que invoque al triguer
-
+TODO fix use crt
 
 oc apply -f gitops/onboard-datascience/app-onboard-datascience.yaml 
