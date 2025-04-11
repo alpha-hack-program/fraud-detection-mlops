@@ -64,7 +64,7 @@ def pipeline(s3_key: str,
 
 
     train_model = components.load_component_from_url(
-        'https://raw.githubusercontent.com/davidseve/mlops/main/ai-examples/fraud-detection/pipeline/train-model/component.yaml'
+        'https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/pipeline/train-model/component.yaml'
     )
     
     train_model_task = train_model(data_input_path=csv_file)

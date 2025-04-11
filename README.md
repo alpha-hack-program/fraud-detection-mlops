@@ -25,5 +25,8 @@
 </table>
 
 
-TODO change raw.githubusercontent.com/davidseve/mlops/main
+TODO change raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main
 caminbar el job para que invoque al triguer
+
+
+oc apply -f gitops/onboard-datascience/app-onboard-datascience.yaml 

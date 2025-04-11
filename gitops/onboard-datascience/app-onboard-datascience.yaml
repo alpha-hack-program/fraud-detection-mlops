@@ -17,7 +17,7 @@ spec:
     helm:
       valueFiles:
       - ../../gitops/values-common.yaml
-      - ../../gitops/onboard-datascience/values-datascience.yaml
+      - ../../gitops/onboard-datascience/values-datasciene.yaml
   syncPolicy:
     automated:
       prune: true
