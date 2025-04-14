@@ -58,10 +58,18 @@ spec:
           value:
             - key: version_number
               expression: "body.commits[0].added[0].split('/')[1].split('.')[0].replace('v', '')"
-
+    - ref:
+        name: cel
+      params:
+        - name: overlays
+          value:
+            - key: data-file
+              expression: "concat('https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/init/',body.commits[0].added[0])"
   bindings:
     - name: version
       value: $(extensions.version_number)
+    - name: data-file
+      value: $(extensions.data-file)
   template: 
     ref: pipeline-run-template
 # ---
@@ -92,6 +100,7 @@ metadata:
 spec:
   params:
   - name: version
+  - name: data-file
   resourcetemplates:
     - apiVersion: tekton.dev/v1
       kind: PipelineRun
@@ -105,6 +114,6 @@ spec:
           name: pipeline-run-{{ .Values.pipeline.name }}
         params:
         - name: CARDTRANSDATA
-          value: "https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata.csv"
+          value: "$(tt.params.data-file)"
         - name: MODEL_VERSION
           value: "$(tt.params.version)"
