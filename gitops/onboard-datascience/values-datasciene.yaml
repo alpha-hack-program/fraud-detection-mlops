@@ -61,4 +61,4 @@ pipeline:
   pythonPipelineName: get_data_train_upload.py
   sourceWorkspaceSize: 2Gi
   trannigData:
-    version: 1
+    version: 2
