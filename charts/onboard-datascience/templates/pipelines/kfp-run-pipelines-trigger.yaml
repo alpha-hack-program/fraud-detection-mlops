@@ -39,7 +39,7 @@ spec:
               value:
                 - key: version_number
                   expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
-    - triggerRef: pipeline-run
+      triggerRef: pipeline-run
 ---
 apiVersion: triggers.tekton.dev/v1beta1 
 kind: Trigger 
