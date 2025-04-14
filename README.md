@@ -28,4 +28,3 @@
 TODO fix use crt
 
 oc apply -f gitops/onboard-datascience/app-onboard-datascience.yaml 
- 
