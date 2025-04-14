@@ -59,6 +59,7 @@ def pipeline(s3_key: str,
              card_transdata: str,
              train_model_component: str):
     get_data_task = get_data(card_transdata=card_transdata)
+    get_data_task.set_caching_options(False)
     csv_file = get_data_task.outputs["data_output_path"]
     # csv_file = get_data_task.output
 
@@ -68,9 +69,11 @@ def pipeline(s3_key: str,
     )
     
     train_model_task = train_model(data_input_path=csv_file)
+    train_model_task.set_caching_options(False)
     onnx_file = train_model_task.outputs["model_output_path"]
 
     upload_model_task = upload_model(input_model_path=onnx_file, s3_key=s3_key)
+    upload_model_task.set_caching_options(False)
 
     kubernetes.use_secret_as_env(
         task=upload_model_task,
