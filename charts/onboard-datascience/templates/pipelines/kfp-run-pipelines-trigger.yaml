@@ -46,12 +46,12 @@ spec:
         name: cel
       params:
       - name: filter
-        # execute only when a file within the ai-examples/fraud-detection/data/card_transdata.csv directory has changed
+        # execute only when a file within the data/card_transdata.csv directory has changed
         value: >
           body.commits.exists(c,
-            c.added.exists(f, f.startsWith('ai-examples/fraud-detection/data/card_transdata.csv')) ||
-            c.modified.exists(f, f.startsWith('ai-examples/fraud-detection/data/card_transdata.csv')) ||
-            c.removed.exists(f, f.startsWith('ai-examples/fraud-detection/data/card_transdata.csv'))
+            c.added.exists(f, f.startsWith('data/card_transdata.csv')) ||
+            c.modified.exists(f, f.startsWith('data/card_transdata.csv')) ||
+            c.removed.exists(f, f.startsWith('data/card_transdata.csv'))
           )
   bindings:
     - ref: pipeline-run-binding
