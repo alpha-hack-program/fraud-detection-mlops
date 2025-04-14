@@ -51,16 +51,17 @@ spec:
           body.commits.exists(c,
             c.added.exists(f, f.startsWith('data/'))
           )
-    # - ref:
-    #     name: cel
-    #   params:
-    #     - name: overlays
-    #       value:
-    #         - key: version_number
-    #           expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
+    - ref:
+        name: cel
+      params:
+        - name: overlays
+          value:
+            - key: version_number
+              expression: "body.commits[0].added[0].split('_').get(body.commits[0].added[0].split('_').size() - 1).split('.')[0].replaceAll('v', '')""
+
   bindings:
     - name: version
-      value: $(body.commits[0].added[0])
+      value: $(extensions.version_number)
   template: 
     ref: pipeline-run-template
 # ---
