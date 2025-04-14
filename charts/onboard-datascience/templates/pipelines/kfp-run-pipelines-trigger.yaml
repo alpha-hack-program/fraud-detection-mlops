@@ -57,7 +57,7 @@ spec:
         - name: overlays
           value:
             - key: version_number
-              expression: "body.commits[0].added[0].split('/').get(1).split('.').get(0)"
+              expression: "body.commits[0].added[0].split('/')[1]"
 
   bindings:
     - name: version
