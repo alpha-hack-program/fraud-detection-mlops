@@ -46,12 +46,12 @@ spec:
         name: cel
       params:
       - name: filter
-        # execute only when a file within the data/card_transdata.csv directory has changed
+        # execute only when a file within the data/ directory has changed
         value: >
           body.commits.exists(c,
-            c.added.exists(f, f.startsWith('data/card_transdata.csv')) ||
-            c.modified.exists(f, f.startsWith('data/card_transdata.csv')) ||
-            c.removed.exists(f, f.startsWith('data/card_transdata.csv'))
+            c.added.exists(f, f.startsWith('data/')) ||
+            c.modified.exists(f, f.startsWith('data/')) ||
+            c.removed.exists(f, f.startsWith('data/'))
           )
   bindings:
     - ref: pipeline-run-binding
@@ -94,4 +94,4 @@ spec:
           name: pipeline-run-{{ .Values.pipeline.name }}
         params:
         - name: CARDTRANSDATA
-          value: "https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata.csv"
+          value: "https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata_v{{ $.Values.trannigData.version }}.csv"
