@@ -41,7 +41,7 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
   serviceAccountName: pipeline 
-  # interceptors:
+  interceptors:
     # - ref:
     #     name: cel
     #   params:
@@ -51,13 +51,13 @@ spec:
     #       body.commits.exists(c,
     #         c.added.exists(f, f.startsWith('data/'))
     #       )
-    # - ref:
-    #     name: cel
-    #   params:
-    #     - name: overlays
-    #       value:
-    #         - key: version_number
-    #           expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
+    - ref:
+        name: cel
+      params:
+        - name: overlays
+          value:
+            - key: version_number
+              expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
   bindings:
     - name: version
       value: "1"
