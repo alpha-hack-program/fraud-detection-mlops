@@ -51,7 +51,6 @@ spec:
           body.commits.exists(c,
             c.added.exists(f, f.startsWith('data/')) 
           )
-
   bindings:
     - ref: pipeline-run-binding
   template: 
@@ -71,7 +70,7 @@ spec:
     - name: header
       value: $(header)
     - name: version
-      value: "1"      
+      value: $(extensions.version_number)      
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
