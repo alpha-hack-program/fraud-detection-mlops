@@ -94,4 +94,4 @@ spec:
           name: pipeline-run-{{ .Values.pipeline.name }}
         params:
         - name: CARDTRANSDATA
-          value: "https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata_v{{ $.Values.trannigData.version }}.csv"
+          value: "https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata_v{{ $.Values.pipeline.trannigData.version }}.csv"
