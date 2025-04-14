@@ -71,7 +71,7 @@ spec:
     - name: header
       value: $(header)
     - name: version
-      value: 1      
+      value: "1"      
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
