@@ -60,7 +60,7 @@ spec:
     #           expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
   bindings:
     - name: version
-      value: "1"
+      value: $(body.commits[0].added[0])
   template: 
     ref: pipeline-run-template
 # ---
