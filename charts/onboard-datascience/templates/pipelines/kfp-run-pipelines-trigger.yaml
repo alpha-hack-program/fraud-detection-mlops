@@ -49,7 +49,7 @@ spec:
         # execute only when a file within the data/card_transdata.csv directory has changed
         value: >
           body.commits.exists(c,
-            c.added.exists(f, f.startsWith('data/card_transdata_v1.csv'))
+            c.added.exists(f, f.startsWith('data/'))
           )
     # - ref:
     #     name: cel
