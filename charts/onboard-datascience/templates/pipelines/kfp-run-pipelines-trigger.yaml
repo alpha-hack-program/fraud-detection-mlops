@@ -42,36 +42,43 @@ metadata:
 spec:
   serviceAccountName: pipeline 
   interceptors:
+    # - ref:
+    #     name: cel
+    #   params:
+    #   - name: filter
+    #     # execute only when a file within the data/card_transdata.csv directory has changed
+    #     value: >
+    #       body.commits.exists(c,
+    #         c.added.exists(f, f.startsWith('data/'))
+    #       )
     - ref:
         name: cel
       params:
-      - name: filter
-        # execute only when a file within the data/card_transdata.csv directory has changed
-        value: >
-          body.commits.exists(c,
-            c.added.exists(f, f.startsWith('data/'))
-          )
-
+        - name: overlays
+          value:
+            - key: version_number
+              expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
   bindings:
-    - ref: pipeline-run-binding
+    - name: version
+      value: $(extensions.version_number)
   template: 
     ref: pipeline-run-template
----
-apiVersion: triggers.tekton.dev/v1beta1
-kind: TriggerBinding
-metadata:
-  name: pipeline-run-binding
-  namespace: {{ $.Values.project.name }}
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-spec:
-  params:
-    - name: body
-      value: $(body)
-    - name: header
-      value: $(header)
-    - name: version
-      value: "1"     
+# ---
+# apiVersion: triggers.tekton.dev/v1beta1
+# kind: TriggerBinding
+# metadata:
+#   name: pipeline-run-binding
+#   namespace: {{ $.Values.project.name }}
+#   annotations:
+#     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+# spec:
+#   params:
+#     - name: body
+#       value: $(body)
+#     - name: header
+#       value: $(header)
+#     - name: version
+#       value: $(extensions.version_number)     
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
