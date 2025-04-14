@@ -104,4 +104,4 @@ spec:
         - name: CARDTRANSDATA
           value: "https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata.csv"
         - name: MODEL_VERSION
-          value: "$(params.version)"
+          value: "$(tt.params.version)"
