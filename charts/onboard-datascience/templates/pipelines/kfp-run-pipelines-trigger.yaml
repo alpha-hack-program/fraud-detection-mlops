@@ -30,6 +30,15 @@ metadata:
 spec:
   serviceAccountName: pipeline
   triggers:
+    - name: extract-version-trigger
+      interceptors:
+        - ref:
+            name: cel
+          params:
+            - name: overlays
+              value:
+                - key: version_number
+                  expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
     - triggerRef: pipeline-run
 ---
 apiVersion: triggers.tekton.dev/v1beta1 
@@ -51,10 +60,6 @@ spec:
           body.commits.exists(c,
             c.added.exists(f, f.startsWith('data/')) 
           )
-      - name: overlays
-        value:
-            - key: version_number
-              expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
   bindings:
     - ref: pipeline-run-binding
   template: 
