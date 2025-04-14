@@ -49,17 +49,15 @@ spec:
         # execute only when a file within the data/card_transdata.csv directory has changed
         value: >
           body.commits.exists(c,
-            c.added.exists(f, f.startsWith('data/card_transdata_v1.csv'))||
-            c.modified.exists(f, f.startsWith('data/card_transdata_v1.csv')) ||
-            c.removed.exists(f, f.startsWith('data/card_transdata_v1.csv'))
+            c.added.exists(f, f.startsWith('data/card_transdata_v1.csv'))
           )
-    - ref:
-        name: cel
-      params:
-        - name: overlays
-          value:
-            - key: version_number
-              expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
+    # - ref:
+    #     name: cel
+    #   params:
+    #     - name: overlays
+    #       value:
+    #         - key: version_number
+    #           expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
   bindings:
     - name: version
       value: "1"
