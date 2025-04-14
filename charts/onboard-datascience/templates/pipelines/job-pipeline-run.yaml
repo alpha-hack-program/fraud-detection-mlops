@@ -76,31 +76,8 @@ spec:
                       claimName: pipeline-upload-{{ .Values.pipeline.name }}-source-pvc
           EOF
           fi    
-              
-          if ! oc get pods -n "$NAMESPACE" -l "$LABEL" -l pipeline-run={{ .Values.pipeline.name }} --no-headers | grep -q '^'; then            
-              oc wait --for=condition=Succeeded --timeout=1h pipelinerun -l "$LABEL" -l pipeline-upload={{ .Values.pipeline.name }} -n "$NAMESPACE"
-              sleep 10
-              
-              cat <<EOF | oc create -f -
-              apiVersion: tekton.dev/v1
-              kind: PipelineRun
-              metadata:
-                  generateName: pipeline-run-{{ .Values.pipeline.name }}
-                  namespace: {{ $.Values.project.name }}
-                  labels:
-                    initial-pipeline-run: "true"
-                    pipeline-run: "{{ .Values.pipeline.name }}"
-              spec:
-                  pipelineRef:
-                    name: pipeline-run-{{ .Values.pipeline.name }}
-                  params:
-                  - name: CARDTRANSDATA
-                    value: "https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata_sort.csv"
-          EOF
-              
-              
-          fi
-          oc wait --for=condition=Succeeded --timeout=1h pipelinerun -l "$LABEL" -l pipeline-run={{ .Values.pipeline.name }} -n "$NAMESPACE"
+          # Wait for the PipelineRun to complete
+          oc wait --for=condition=Succeeded --timeout=1h pipelinerun -l "$LABEL" -l pipeline-upload={{ .Values.pipeline.name }} -n "$NAMESPACE"
       restartPolicy: Never
   backoffLimit: 1
 {{- end }}
