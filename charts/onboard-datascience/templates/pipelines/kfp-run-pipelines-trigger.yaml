@@ -64,7 +64,7 @@ spec:
         - name: overlays
           value:
             - key: data-file
-              expression: "[https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/init/', body.commits[0].added[0])].join('')"
+              expression: "'https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/init/'+ body.commits[0].added[0]"
   bindings:
     - name: version
       value: $(extensions.version_number)
