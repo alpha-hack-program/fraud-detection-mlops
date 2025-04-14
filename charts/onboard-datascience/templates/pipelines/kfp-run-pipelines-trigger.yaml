@@ -51,13 +51,7 @@ spec:
           body.commits.exists(c,
             c.added.exists(f, f.startsWith('data/'))
           )
-    - ref:
-        name: cel
-      params:
-        - name: overlays
-          value:
-            - key: version_number
-              expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
+
   bindings:
     - ref: pipeline-run-binding
   template: 
@@ -77,7 +71,7 @@ spec:
     - name: header
       value: $(header)
     - name: version
-      value: $(extensions.version_number)     
+      value: 1     
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
