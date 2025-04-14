@@ -49,10 +49,12 @@ spec:
         # execute only when a file within the data/card_transdata.csv directory has changed
         value: >
           body.commits.exists(c,
-            c.added.exists(f, f.startsWith('data/card_transdata.csv')) ||
-            c.modified.exists(f, f.startsWith('data/card_transdata.csv')) ||
-            c.removed.exists(f, f.startsWith('data/card_transdata.csv'))
+            c.added.exists(f, f.startsWith('data/')) 
           )
+      - name: overlays
+        value:
+            - key: version_number
+              expression: "body.commits[0].added[0].split('_')[-1].split('.')[0].replaceAll('v', '')"
   bindings:
     - ref: pipeline-run-binding
   template: 
@@ -71,6 +73,8 @@ spec:
       value: $(body)
     - name: header
       value: $(header)
+    - name: version
+      value: $(extensions.version_number)      
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
@@ -95,3 +99,5 @@ spec:
         params:
         - name: CARDTRANSDATA
           value: "https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata.csv"
+        - name: MODEL_VERSION
+          value: "$(params.version)"
