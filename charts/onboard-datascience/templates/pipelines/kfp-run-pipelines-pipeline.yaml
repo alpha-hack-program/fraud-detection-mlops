@@ -23,10 +23,10 @@ spec:
       default: '{{ .Values.pipeline.gitSslVerify }}'  
     - name: GIT_USER_NAME
       type: string
-      default: 'davidseve'  
+      default: '{{ .Values.pipeline.github.user }}'  
     - name: GIT_USER_EMAIL
       type: string  
-      default: 'davidseve16@gmail.com'           
+      default: '{{ .Values.pipeline.github.user }}'           
   tasks:
     - name: kfp-run-pipelines
       taskRef:
@@ -80,7 +80,7 @@ spec:
           script: |
             #!/usr/bin/env bash
             cd $(workspaces.source.path)/gitops/inference
-            sed -i 's/^\(\s*version:\s*\)1$/\1$(MODEL_VERSION)/' values-inference.yaml 
+            sed -i 's/^\(\s*version:\s*\).*/\1$(params.MODEL_VERSION)/' values-inference.yaml 
             cat values-inference.yaml
         workspaces:
         - name: source
@@ -103,16 +103,30 @@ spec:
           value: $(params.GIT_USER_NAME)
         - name: GIT_USER_EMAIL
           value: $(params.GIT_USER_EMAIL)
+        - name: DELETE_EXISTING
+          value: false             
         - name: GIT_SCRIPT
           value: |
             cd $(workspaces.source.path)/gitops/inference
             git add values-inference.yaml
             git commit -m "Change inference version to $(params.MODEL_VERSION)"
-            git push origin $(params.GIT_REVISION):$(params.GIT_REPO)
+            git push origin HEAD:$(params.GIT_REVISION)
       workspaces:
       - name: source
         workspace: workspace-source 
 
   workspaces:
     - name: workspace-source   
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pipeline-run-{{ .Values.pipeline.name }}-source-pvc
+  namespace: {{ $.Values.project.name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pipeline.sourceWorkspaceSize }}       
 
