@@ -1,8 +1,8 @@
 apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
-  name: pipeline-run-{{ .Values.pipeline.name }}
-  namespace: {{ $.Values.project.name }}
+  name: pipeline-run-pipeline-one
+  namespace: fraud
 spec:
   params:
     - description: Model version
@@ -14,19 +14,19 @@ spec:
       type: string
     - name: GIT_REPO
       type: string
-      default: "{{ .Values.pipeline.repo }}"
+      default: "https://github.com/alpha-hack-program/fraud-detection-mlops.git"
     - name: GIT_REVISION
       type: string
-      default: "{{ .Values.pipeline.revision }}"
+      default: "HEAD"
     - name: GIT_SSL_VERIFY
       type: string
-      default: '{{ .Values.pipeline.gitSslVerify }}'  
+      default: 'true'  
     - name: GIT_USER_NAME
-      type: string
+      value: $(params.GIT_USER_NAME)
       default: 'davidseve'  
     - name: GIT_USER_EMAIL
-      type: string  
-      default: 'davidseve16@gmail.com'           
+      value: $(params.GIT_USER_EMAIL)   
+      default: 'davidseve16@gmail.com'               
   tasks:
     - name: kfp-run-pipelines
       taskRef:
@@ -39,8 +39,6 @@ spec:
           value: $(params.MODEL_VERSION)    
 
     - name: fetch-repository
-      runAfter:
-      - kfp-run-pipelines    
       timeout: 10m0s
       params:
         - name: URL
@@ -77,6 +75,7 @@ spec:
         steps:
         - name: change-inference-version
           image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
+
           script: |
             #!/usr/bin/env bash
             cd $(workspaces.source.path)/gitops/inference
