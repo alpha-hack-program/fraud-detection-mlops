@@ -13,7 +13,7 @@ spec:
   source: 
     path: charts/onboard-datascience
     repoURL: 'https://github.com/alpha-hack-program/fraud-detection-mlops.git'
-    targetRevision: init #TODO HEAD
+    targetRevision: HEAD
     helm:
       valueFiles:
       - ../../gitops/values-common.yaml
