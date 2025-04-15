@@ -71,23 +71,7 @@ spec:
     - name: data-file
       value: $(extensions.data-file)
   template: 
-    ref: pipeline-run-template
-# ---
-# apiVersion: triggers.tekton.dev/v1beta1
-# kind: TriggerBinding
-# metadata:
-#   name: pipeline-run-binding
-#   namespace: {{ $.Values.project.name }}
-#   annotations:
-#     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-# spec:
-#   params:
-#     - name: body
-#       value: $(body)
-#     - name: header
-#       value: $(header)
-#     - name: version
-#       value: $(extensions.version_number)     
+    ref: pipeline-run-template    
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
