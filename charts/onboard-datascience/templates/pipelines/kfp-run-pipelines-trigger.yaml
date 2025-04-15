@@ -46,31 +46,32 @@ spec:
         name: cel
       params:
       - name: filter
-        # execute only when a file within the ai-examples/fraud-detection/data/card_transdata.csv directory has changed
+        # execute only when a file within the data/card_transdata.csv directory has changed
         value: >
           body.commits.exists(c,
-            c.added.exists(f, f.startsWith('ai-examples/fraud-detection/data/card_transdata.csv')) ||
-            c.modified.exists(f, f.startsWith('ai-examples/fraud-detection/data/card_transdata.csv')) ||
-            c.removed.exists(f, f.startsWith('ai-examples/fraud-detection/data/card_transdata.csv'))
+            c.added.exists(f, f.startsWith('data/'))
           )
+    - ref:
+        name: cel
+      params:
+        - name: overlays
+          value:
+            - key: version_number
+              expression: "body.commits[0].added[0].split('/')[1].split('.')[0].replace('v', '')"
+    - ref:
+        name: cel
+      params:
+        - name: overlays
+          value:
+            - key: data-file
+              expression: "'https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/init/'+ body.commits[0].added[0]"
   bindings:
-    - ref: pipeline-run-binding
+    - name: version
+      value: $(extensions.version_number)
+    - name: data-file
+      value: $(extensions.data-file)
   template: 
-    ref: pipeline-run-template
----
-apiVersion: triggers.tekton.dev/v1beta1
-kind: TriggerBinding
-metadata:
-  name: pipeline-run-binding
-  namespace: {{ $.Values.project.name }}
-  annotations:
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-spec:
-  params:
-    - name: body
-      value: $(body)
-    - name: header
-      value: $(header)
+    ref: pipeline-run-template    
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
@@ -81,6 +82,9 @@ metadata:
     triggers.tekton.dev/old-escape-quotes: "true"
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
+  params:
+  - name: version
+  - name: data-file
   resourcetemplates:
     - apiVersion: tekton.dev/v1
       kind: PipelineRun
@@ -94,4 +98,6 @@ spec:
           name: pipeline-run-{{ .Values.pipeline.name }}
         params:
         - name: CARDTRANSDATA
-          value: "https://raw.githubusercontent.com/alpha-hack-program/fraud-detection-mlops/main/data/card_transdata.csv"
+          value: "$(tt.params.data-file)"
+        - name: MODEL_VERSION
+          value: "$(tt.params.version)"

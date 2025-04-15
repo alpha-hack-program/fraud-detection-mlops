@@ -54,9 +54,9 @@ pipeline:
       AWS_SECRET_ACCESS_KEY: minio123 #from create-root-user-job.yaml MINIO_ROOT_PASSWORD   
       scheme: http
   #Tekton pipeline
-  repo: https://github.com/davidseve/mlops.git
-  revision: ai-fraud-example
+  repo: https://github.com/alpha-hack-program/fraud-detection-mlops.git
+  revision: HEAD
   gitSslVerify: true
-  pipelinePath: ai-examples/fraud-detection/pipeline
+  pipelinePath: pipeline
   pythonPipelineName: get_data_train_upload.py
   sourceWorkspaceSize: 2Gi
