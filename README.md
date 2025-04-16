@@ -35,7 +35,7 @@ git clone https://github.com/alpha-hack-program/fraud-detection-mlops.git
 ```
 
 Go to the folder where you have cloned your forked repository and create a new branch `testing`
-```
+```bash
 cd fraud-detection-mlops
 git checkout -b testing
 git push origin testing
@@ -55,6 +55,7 @@ Before proceeding with the demo, you need to update the GitHub credentials in th
      value: "changeme_token"
    - name: "pipeline.github.user"
      value: "changeme_user"
+   ```
 
 - **Set Up the Data Science Environment**
 
