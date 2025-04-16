@@ -1,4 +1,4 @@
 inference:
   dataconnections: dataconnection-model
-  version: chage-me
+  version: 1
 multimodel: false
