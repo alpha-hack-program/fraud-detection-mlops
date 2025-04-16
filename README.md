@@ -26,6 +26,21 @@
 ---
 
 TODO fix use crt
+
+## Prerequisites:
+As part of the demo, you will have to do some changes and commits. So **it is important that you fork the repository and clone it in your local**.
+
+```
+git clone https://github.com/alpha-hack-program/fraud-detection-mlops.git
+```
+
+Go to the folder where you have cloned your forked repository and create a new branch `testing`
+```
+cd fraud-detection-mlops
+git checkout -b testing
+git push origin testing
+```
+
 ## Steps to Run the Demo
 
 
@@ -126,3 +141,10 @@ data='{
 curl -k -X POST "$url" -H "Content-Type: application/json" -d "$data"
 ```
 
+## Delete environment
+
+```bash
+git checkout main
+git branch -D testing
+git push origin --delete testing
+```
