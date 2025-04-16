@@ -43,6 +43,18 @@ git push origin testing
 
 ## Steps to Run the Demo
 
+- **Update GitHub Credentials**
+
+Before proceeding with the demo, you need to update the GitHub credentials in the `gitops/onboard-datascience/app-onboard-datascience.yaml` file. These credentials are required for the pipeline to interact with your GitHub repository.
+
+1. Open the file `gitops/onboard-datascience/app-onboard-datascience.yaml`.
+2. Locate the following section:
+   ```yaml
+   parameters:
+   - name: "pipeline.github.token"
+     value: "changeme_token"
+   - name: "pipeline.github.user"
+     value: "changeme_user"
 
 - **Set Up the Data Science Environment**
 
