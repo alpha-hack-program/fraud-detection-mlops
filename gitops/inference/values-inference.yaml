@@ -1,4 +1,4 @@
 inference:
   dataconnections: dataconnection-model
-  version: 2
+  version: change-me
 multimodel: false
