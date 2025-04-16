@@ -103,6 +103,7 @@ To train a new version of the model. Create a file named 'v2.csv' containing the
 
 Commit and push the v2.csv file to the Git repository to trigger the model training pipeline again:
 ```bash
+git pull
 git add data/v2.csv
 git commit -m "Add data v2.csv for model training"
 git push origin main
@@ -147,10 +148,3 @@ data='{
 curl -k -X POST "$url" -H "Content-Type: application/json" -d "$data"
 ```
 
-## Delete environment
-
-```bash
-git checkout main
-git branch -D testing
-git push origin --delete testing
-```
