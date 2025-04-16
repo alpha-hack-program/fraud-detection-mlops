@@ -30,15 +30,8 @@ TODO fix use crt
 ## Prerequisites:
 As part of the demo, you will have to do some changes and commits. So **it is important that you fork the repository and clone it in your local**.
 
-```
-git clone https://github.com/alpha-hack-program/fraud-detection-mlops.git
-```
-
-Go to the folder where you have cloned your forked repository and create a new branch `testing`
 ```bash
-cd fraud-detection-mlops
-git checkout -b testing
-git push origin testing
+git clone https://github.com/alpha-hack-program/fraud-detection-mlops.git
 ```
 
 ## Steps to Run the Demo
