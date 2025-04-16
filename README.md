@@ -26,8 +26,35 @@
 ---
 
 TODO fix use crt
+
+## Prerequisites:
+As part of the demo, you will have to do some changes and commits. So **it is important that you fork the repository and clone it in your local**.
+
+```
+git clone https://github.com/alpha-hack-program/fraud-detection-mlops.git
+```
+
+Go to the folder where you have cloned your forked repository and create a new branch `testing`
+```
+cd fraud-detection-mlops
+git checkout -b testing
+git push origin testing
+```
+
 ## Steps to Run the Demo
 
+- **Update GitHub Credentials**
+
+Before proceeding with the demo, you need to update the GitHub credentials in the `gitops/onboard-datascience/app-onboard-datascience.yaml` file. These credentials are required for the pipeline to interact with your GitHub repository.
+
+1. Open the file `gitops/onboard-datascience/app-onboard-datascience.yaml`.
+2. Locate the following section:
+   ```yaml
+   parameters:
+   - name: "pipeline.github.token"
+     value: "changeme_token"
+   - name: "pipeline.github.user"
+     value: "changeme_user"
 
 - **Set Up the Data Science Environment**
 
@@ -126,3 +153,10 @@ data='{
 curl -k -X POST "$url" -H "Content-Type: application/json" -d "$data"
 ```
 
+## Delete environment
+
+```bash
+git checkout main
+git branch -D testing
+git push origin --delete testing
+```

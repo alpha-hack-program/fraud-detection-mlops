@@ -101,3 +101,7 @@ spec:
           value: "$(tt.params.data-file)"
         - name: MODEL_VERSION
           value: "$(tt.params.version)"
+        workspaces:
+        - name: workspace-source
+          persistentVolumeClaim:
+            claimName: pipeline-run-{{ .Values.pipeline.name }}-source-pvc           

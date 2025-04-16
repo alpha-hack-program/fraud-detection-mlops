@@ -12,6 +12,21 @@ spec:
     - description: Card transaction data
       name: CARDTRANSDATA
       type: string
+    - name: GIT_REPO
+      type: string
+      default: "{{ .Values.pipeline.repo }}"
+    - name: GIT_REVISION
+      type: string
+      default: "{{ .Values.pipeline.revision }}"
+    - name: GIT_SSL_VERIFY
+      type: string
+      default: '{{ .Values.pipeline.gitSslVerify }}'  
+    - name: GIT_USER_NAME
+      type: string
+      default: '{{ .Values.pipeline.github.user }}'  
+    - name: GIT_USER_EMAIL
+      type: string  
+      default: '{{ .Values.pipeline.github.user }}'           
   tasks:
     - name: kfp-run-pipelines
       taskRef:
@@ -21,6 +36,98 @@ spec:
         - name: CARDTRANSDATA
           value: $(params.CARDTRANSDATA)
         - name: MODEL_VERSION
-          value: $(params.MODEL_VERSION)          
+          value: $(params.MODEL_VERSION)    
 
+    - name: fetch-repository
+      runAfter:
+      - kfp-run-pipelines    
+      timeout: 10m0s
+      params:
+        - name: URL
+          value: $(params.GIT_REPO)
+        - name: REVISION
+          value: $(params.GIT_REVISION)
+        - name: DELETE_EXISTING
+          value: 'true'
+        - name: SSL_VERIFY
+          value: $(params.GIT_SSL_VERIFY)
+      taskRef:
+        params:
+          - name: name
+            value: git-clone
+          - name: namespace
+            value: openshift-pipelines
+        resolver: cluster
+      workspaces:
+        - name: output
+          workspace: workspace-source
+
+    - name: change-inference-version
+      runAfter:
+      - fetch-repository
+      params:
+        - name: MODEL_VERSION
+          value: $(params.MODEL_VERSION)
+      taskSpec:
+        metadata: {}
+        params:
+        - name: MODEL_VERSION
+          type: string
+        spec: null
+        steps:
+        - name: change-inference-version
+          computeResources: {}
+          image: registry.access.redhat.com/ubi8/ubi-minimal:8.3
+          script: |
+            #!/usr/bin/env bash
+            cd $(workspaces.source.path)/gitops/inference
+            sed -i 's/^\(\s*version:\s*\).*/\1$(params.MODEL_VERSION)/' values-inference.yaml 
+            cat values-inference.yaml
+        workspaces:
+        - name: source
+      workspaces:
+      - name: source
+        workspace: workspace-source                
+  
+    - name: commit-change-inference-version
+      runAfter:
+      - change-inference-version
+      taskRef:
+        params:
+          - name: name
+            value: git-cli
+          - name: namespace
+            value: openshift-pipelines
+        resolver: cluster      
+      params:
+        - name: GIT_USER_NAME
+          value: $(params.GIT_USER_NAME)
+        - name: GIT_USER_EMAIL
+          value: $(params.GIT_USER_EMAIL)
+        - name: DELETE_EXISTING
+          value: 'false'             
+        - name: GIT_SCRIPT
+          value: |
+            cd $(workspaces.source.path)/gitops/inference
+            git add values-inference.yaml
+            git commit -m "Change inference version to $(params.MODEL_VERSION)"
+            git push origin HEAD:$(params.GIT_REVISION)
+      workspaces:
+      - name: source
+        workspace: workspace-source 
+
+  workspaces:
+    - name: workspace-source   
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pipeline-run-{{ .Values.pipeline.name }}-source-pvc
+  namespace: {{ $.Values.project.name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pipeline.sourceWorkspaceSize }}       
 
