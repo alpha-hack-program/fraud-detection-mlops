@@ -18,10 +18,10 @@ spec:
       valueFiles:
       - ../../gitops/values-common.yaml
       - ../../gitops/onboard-datascience/values-datasciene.yaml
-     parameters:
-      - name: "github.token"
+      parameters:
+      - name: "pipeline.github.token"
         value: "changeme_token"
-      - name: "github.user"
+      - name: "pipeline.github.user"
         value: "changeme_user"    
   syncPolicy:
     automated:
