@@ -55,7 +55,7 @@ pipeline:
       scheme: http
   #Tekton pipeline
   repo: https://github.com/alpha-hack-program/fraud-detection-mlops.git
-  revision: HEAD
+  revision: pipeline
   gitSslVerify: true
   pipelinePath: pipeline
   pythonPipelineName: get_data_train_upload.py
