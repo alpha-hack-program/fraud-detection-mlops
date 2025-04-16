@@ -62,4 +62,4 @@ pipeline:
   sourceWorkspaceSize: 2Gi
   github:
     token: ChangeMe
-    user: davidseve
+    user: ChangeMe
